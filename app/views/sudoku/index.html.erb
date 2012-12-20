@@ -1,0 +1,54 @@
+<h1>Sudoku#index</h1>
+<p>Find me in app/views/sudoku/index.html.erb</p>
+
+
+<%= form_tag( sudoku_index_path, :method => 'post'  ) do %>
+<p>
+<%= @puzzle["str"] %>
+jhgjgv</p>
+<% 
+rows = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+cols = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j"]
+%>
+<table style = "border: 3px solid black; border-collapse: collapse">
+
+<%
+3.times do |r|
+%>
+    <tr style = "border: 3px solid black" >
+<%
+    3.times do |c|
+%>
+        <td style = "border: 3px solid black" ><table>
+<%
+        3.times do |ir|
+%>
+            <tr>
+<%
+            3.times do |ic|
+                row = (r * 3) + ir
+                col = (c * 3) + ic
+%>            
+                <td>
+<%= number_field_tag "#{rows[row]}#{cols[col]}", nil, :in => 0..9, :class => "sudoku_input", :value => "#{@puzzle["#{rows[row]}#{cols[col]}"]}" %>              
+                </td>
+<% 
+            end
+%>
+            </tr>
+<% 
+        end
+%>
+        </table></td>
+<%  
+    end
+%>
+    </tr>
+<% 
+end
+end
+%>
+</table>
+
+<%= button_tag "Solve"  %>
+<%= button_to  'Reset', sudoku_index_path, :method => "get" %>
