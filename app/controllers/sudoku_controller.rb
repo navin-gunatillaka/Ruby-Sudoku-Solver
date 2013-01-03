@@ -2,6 +2,7 @@ require 'set'
 
 class SudokuController < ApplicationController
 
+
 def select(r)
    del_rows = Set.new
    @rows[r].each do |col|
@@ -75,28 +76,28 @@ end
 
 
 
-  def create
-       @puzzle = params
-       @puzzle[:solved] = "TRUE"
+def create
+   @puzzle = params
+   @puzzle[:solved] = "TRUE"
 
 
 
-@rows ={}
+   @rows ={}
 
-r = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-c = ["a", "b", "c", "d", "e", "f", "g", "h", "i"]
-
-
+   r = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+   c = ["a", "b", "c", "d", "e", "f", "g", "h", "i"]
 
 
 
 
-key = Struct.new(:col, :row, :val)
-element = Struct.new(:id, :val1, :val2)
 
-r.each do |row|
-    c.each do |col|
-        9.times do |val|
+
+   key = Struct.new(:col, :row, :val)
+   element = Struct.new(:id, :val1, :val2)
+
+   r.each do |row|
+      c.each do |col|
+         9.times do |val|
             k = key.new(col, row, val+1)
             block = " #{ (row - 1)/ 3}|#{ (a_to_i(col) - 1) / 3}"
             bv = element.new("BV", block, val+1)
@@ -104,60 +105,70 @@ r.each do |row|
             rv = element.new("RV", row, val+1)
             cr = element.new("CR", col, row)
             @rows[k.dup] = [bv.dup, cv.dup, rv.dup, cr.dup]
-        end 
-    end
-end
+         end 
+      end
+   end
 
-@cols = {}
+   @cols = {}
 
-@rows.each do |row|
-    row[1].each do |col|
-        if @cols.has_key? col
+   @rows.each do |row|
+      row[1].each do |col|
+         if @cols.has_key? col
             @cols[col].add(row[0])
-        else
+         else
             @cols[col] = Set.new [row[0]]
-        end
-    end
-end
+         end
+      end
+   end
 
 #select(key.new("i",9,1))
-@puzzle["str"] = "aa"
-r.each do |row|
-    c.each do |col|
-        if @puzzle.has_key? "#{row}#{col}" and numeric? @puzzle["#{row}#{col}"]
+   @puzzle["str"] = "aa"
+   r.each do |row|
+      c.each do |col|
+         if @puzzle.has_key? "#{row}#{col}" and numeric? @puzzle["#{row}#{col}"]
             select(key.new(col, row, Integer(@puzzle["#{row}#{col}"])))  
             @puzzle["str"] = "s" + @puzzle["str"].dup
-        end
-    end
-end
-
-x = solve
-
-puts x.to_a
-
-grid = Hash.new
-
-x.each do |entry|
-    grid[[entry.row, a_to_i(entry.col)]] = entry.val
-    @puzzle["#{entry.row}#{entry.col}"] = entry.val
-end
-
-9.times do |r|
-   9.times do |c|
-      print grid[[r+1,c+1]], " "
+         end
+      end
    end
-   print "\n"
+
+   x = solve
+
+   puts x.to_a
+
+   grid = Hash.new
+
+   x.each do |entry|
+      grid[[entry.row, a_to_i(entry.col)]] = entry.val
+      @puzzle["#{entry.row}#{entry.col}"] = entry.val
+   end
+
+   9.times do |r|
+      9.times do |c|
+         print grid[[r+1,c+1]], " "
+      end
+      print "\n"
+   end
+
+   respond_to do |format|
+      format.html   {redirect_to  @puzzle, :action => :show}
+      format.js #create.js.erb
+   end 
 end
-
-
-           redirect_to  @puzzle, :action => :show 
-  end
 
   def new 
       respond_to do |format|
            format.html #index.html.erb
       end
   end 
+
+  def reset
+      @puzzle = params.dup
+      respond_to do |format|
+          format.js   #index.js.erb
+      end
+  end
+
 
   def index
 
@@ -166,6 +177,7 @@ end
 
       respond_to do |format|
           format.html #index.html.erb
+          format.js   #index.js.erb
       end
   end
 

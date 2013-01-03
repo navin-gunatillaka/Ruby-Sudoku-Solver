@@ -4,7 +4,7 @@ Blog::Application.routes.draw do
     
 
   resources :sudoku do
-     collection do
+     member do
         post 'reset'
      end
   end
